@@ -1,70 +1,54 @@
-# 📄 LatexToPdf
+# LatexToPdf API
 
-**LatexToPdf** is a simple, cross-platform Python desktop application to convert LaTeX code into PDF with live preview, built using [`customtkinter`](https://github.com/TomSchimansky/CustomTkinter).
+LatexToPdf is a lightweight, containerized Python web API built with FastAPI that compiles LaTeX files into highly precise PDF documents. 
 
----
+## Features
 
-## 📦 Downloads 
+- RESTful Endpoint (`POST /compile`) to accept `.tex` and supplementary files.
+- Generates and returns a `.pdf` payload securely.
+- Isolated container compilation (every compilation uses its own temporary workspace).
+- Integrated Docker and GHCR image publishing.
+- High-performance asyncio engine.
 
-**Windows**: [Download Latest Release](https://github.com/yourusername/latexToPdf/releases/latest)
+## Usage
 
----
+### Using Docker (Recommended)
 
-**Linux**: [Download Latest `.deb`](https://github.com/khalildim/latexToPdf/compare/v1...v1.0.1)
-
-After download:
-```bash
-sudo dpkg -i latexToPdf_1.0.deb
-
-```
-## ✨ Features
-
-- Compile LaTeX code to PDF on the fly
-- Display each PDF page as an image
-- Download the generated PDF
-- Cross-platform support (Windows, macOS, Linux)
-- Auto-detect and install LaTeX environment if missing
-
----
-
-## 🖥️ Screenshots
-
-![LatexToPdf Screenshot](screenshots/preview.png)
-
----
-
-## 💻 Requirements
-
-- Python 3.9 or later
-- LaTeX distribution:
-  - Windows: [MiKTeX](https://miktex.org)
-  - macOS: [MacTeX](https://tug.org/mactex/)
-  - Linux: [TeX Live](https://tug.org/texlive/)
-
----
-
-## 🚀 Installation
-
-### 🔧 1. Clone the repository
+You can pull the pre-built image from GHCR or build it yourself:
 
 ```bash
-git clone https://github.com/yourusername/latexToPdf.git
-cd latexToPdf
-
-python -m venv .venv
-# Activate:
-# On Windows:
-.venv\Scripts\activate
-# On Linux/macOS:
-source .venv/bin/activate
-# run the app
-python env_setup.py
-python main.py
+docker build -t latex-api .
+docker run -p 8080:80 latex-api
 ```
----
-## ☕ Support
 
-If you find this tool helpful, consider supporting me:
+### Local Development
 
-[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png)](https://buymeacoffee.com/khalil_dim)
+If you prefer to run it locally without Docker:
 
+```bash
+# 1. Create and activate a Virtual Environment
+python3 -m venv .venv_new
+source .venv_new/bin/activate
+
+# 2. Install Dependencies
+pip install -r requirements.txt
+
+# 3. Ensure you have a LaTeX distribution installed (e.g., MacTeX, TeX Live)
+
+# 4. Start the Application
+uvicorn main:app --port 8080
+```
+
+## API Testing
+
+You can easily compile a document by sending a `POST` request.
+
+Basic Compilation (Single File):
+```bash
+curl -X POST -F "file=@sample.tex" http://localhost:8080/compile --output output.pdf
+```
+
+Advanced Compilation (With Assets like local images):
+```bash
+curl -X POST -F "file=@sample.tex" -F "assets=@headshot.jpg" http://localhost:8080/compile --output output.pdf
+```
