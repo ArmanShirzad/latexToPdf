@@ -1,12 +1,26 @@
 import tempfile
 import subprocess
 import os
+from typing import List, Optional
 from fastapi import FastAPI, UploadFile, File, Response, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="LaTeX to PDF API")
 
-from typing import List, Optional
+# Security: CORS Configuration
+# Extract allowed origins from environment variable (comma-separated)
+# Example: ALLOWED_ORIGINS="http://localhost:3000,http://192.168.1.1"
+origins_str = os.getenv("ALLOWED_ORIGINS", "*")
+allowed_origins = [origin.strip() for origin in origins_str.split(",")]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/compile")
 async def compile_latex(file: UploadFile = File(...), assets: Optional[List[UploadFile]] = File(None)):

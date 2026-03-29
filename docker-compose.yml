@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  latex-api:
+    build: .
+    image: ghcr.io/ArmanShirzad/latextopdf:latest
+    ports:
+      - "8080:80"
+    environment:
+      # Change this to your specific allowed domains or IPs (comma-separated).
+      # Use "*" for development to allow all (though not recommended for production).
+      - ALLOWED_ORIGINS=http://localhost:3000,http://your-app-ip-address
+    restart: always
