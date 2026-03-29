@@ -6,12 +6,14 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="LaTeX to PDF API")
 
+from typing import List, Optional
+
 @app.post("/compile")
-async def compile_latex(file: UploadFile = File(...)):
+async def compile_latex(file: UploadFile = File(...), assets: Optional[List[UploadFile]] = File(None)):
     if not file.filename.endswith(".tex"):
         raise HTTPException(status_code=400, detail="Uploaded file must be a .tex file")
     
-    # Read the content
+    # Read the main content
     content = await file.read()
     
     # Create a temporary directory
@@ -20,6 +22,14 @@ async def compile_latex(file: UploadFile = File(...)):
         tex_path = os.path.join(temp_dir, "main.tex")
         with open(tex_path, "wb") as f:
             f.write(content)
+            
+        # Save any additional assets to the temp directory
+        if assets:
+            for asset in assets:
+                asset_path = os.path.join(temp_dir, asset.filename)
+                asset_content = await asset.read()
+                with open(asset_path, "wb") as af:
+                    af.write(asset_content)
         
         # Run pdflatex
         try:
