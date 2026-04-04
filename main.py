@@ -1,7 +1,7 @@
 import tempfile
 import subprocess
 import os
-from typing import List, Optional
+from typing import List
 from fastapi import FastAPI, UploadFile, File, Response, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,7 +25,7 @@ app.add_middleware(
 @app.post("/compile")
 async def compile_latex(
     file: UploadFile = File(..., description="The main .tex file"),
-    assets: Optional[List[UploadFile]] = File(default=None, description="Optional asset files (images, etc.)")
+    assets: List[UploadFile] = File(default=[])
 ):
     if not file.filename.endswith(".tex"):
         raise HTTPException(status_code=400, detail="Uploaded file must be a .tex file")
