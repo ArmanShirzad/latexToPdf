@@ -23,7 +23,10 @@ app.add_middleware(
 )
 
 @app.post("/compile")
-async def compile_latex(file: UploadFile = File(...), assets: Optional[List[UploadFile]] = File(None)):
+async def compile_latex(
+    file: UploadFile = File(..., description="The main .tex file"),
+    assets: Optional[List[UploadFile]] = File(default=None, description="Optional asset files (images, etc.)")
+):
     if not file.filename.endswith(".tex"):
         raise HTTPException(status_code=400, detail="Uploaded file must be a .tex file")
     

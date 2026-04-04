@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   latex-api:
-    build: .
-    image: ghcr.io/arman-shirzad/latextopdf:latest
+    image: ghcr.io/armanshirzad/latextopdf:main
+
     container_name: latex-backend
     restart: always
     environment:
