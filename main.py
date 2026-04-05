@@ -1,6 +1,7 @@
 import tempfile
 import subprocess
 import os
+import logging
 from typing import List
 from fastapi import FastAPI, UploadFile, File, Response, HTTPException
 from fastapi.responses import JSONResponse
@@ -43,10 +44,13 @@ async def compile_latex(
         # Save any additional assets to the temp directory
         if assets:
             for asset in assets:
+                print(f"[DEBUG] Received asset filename: '{asset.filename}'", flush=True)
                 asset_path = os.path.join(temp_dir, asset.filename)
+                print(f"[DEBUG] Saving asset to: '{asset_path}'", flush=True)
                 asset_content = await asset.read()
                 with open(asset_path, "wb") as af:
                     af.write(asset_content)
+                print(f"[DEBUG] Files in temp_dir: {os.listdir(temp_dir)}", flush=True)
         
         # Run pdflatex
         try:
