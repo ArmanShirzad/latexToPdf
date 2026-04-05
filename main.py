@@ -42,11 +42,25 @@ async def compile_latex(
             f.write(content)
             
         # Save any additional assets to the temp directory
+        # pdflatex cannot handle spaces in filenames, so we sanitize them
+        # and update references in the .tex source to match
         if assets:
             for asset in assets:
-                print(f"[DEBUG] Received asset filename: '{asset.filename}'", flush=True)
-                asset_path = os.path.join(temp_dir, asset.filename)
-                print(f"[DEBUG] Saving asset to: '{asset_path}'", flush=True)
+                original_name = asset.filename
+                safe_name = original_name.replace(" ", "_")
+                print(f"[DEBUG] Asset: '{original_name}' -> '{safe_name}'", flush=True)
+                
+                # If filename was sanitized, update references in the .tex content
+                if safe_name != original_name:
+                    content = content.replace(
+                        original_name.encode("utf-8"),
+                        safe_name.encode("utf-8")
+                    )
+                    # Re-write the .tex file with updated references
+                    with open(tex_path, "wb") as f:
+                        f.write(content)
+                
+                asset_path = os.path.join(temp_dir, safe_name)
                 asset_content = await asset.read()
                 with open(asset_path, "wb") as af:
                     af.write(asset_content)
